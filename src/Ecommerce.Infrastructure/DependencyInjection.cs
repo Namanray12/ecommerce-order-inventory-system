@@ -1,5 +1,7 @@
 ﻿using Ecommerce.Application.Interfaces.Repositories;
 using Ecommerce.Application.Interfaces.Services;
+using Ecommerce.Infrastructure.BackgroundServices;
+using Ecommerce.Infrastructure.Caching;
 using Ecommerce.Infrastructure.Data;
 using Ecommerce.Infrastructure.Repositories;
 using Ecommerce.Infrastructure.Security;
@@ -28,6 +30,9 @@ namespace Ecommerce.Infrastructure
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+            services.AddMemoryCache();
+            services.AddSingleton<IProductCacheService, ProductCacheService>();
+            services.AddHostedService<OrderExpirationBackgroundService>();
 
             var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>()
                               ?? throw new InvalidOperationException("JwtSettings is not configured in appsettings.json.");
